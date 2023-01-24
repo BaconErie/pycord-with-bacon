@@ -1577,6 +1577,14 @@ class Messageable:
                         "Files being sent should be discord.File objects, not classes. Have you forgotten parentheses?"
                     )
 
+        # Error if AllowedMentions is a class
+        if allowed_mentions and isinstance(allowed_mentions, type):
+            raise InvalidArgument(
+                "The argument you passed into allowed_mentions must be an object, not a class. Have you forgotten parentheses?"
+            )
+
+
+
         if view:
             if not hasattr(view, "__discord_ui_view__"):
                 raise InvalidArgument(

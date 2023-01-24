@@ -1710,7 +1710,7 @@ class Webhook(BaseWebhook):
                 f"The view you passed, {view.__name__}, should be an object, not a class. Have you forgotten parentheses?"
             )
         
-        
+
         # Error if any of the files are classes
         if file is not MISSING and isinstance(file, type):
             raise InvalidArgument(
@@ -1723,6 +1723,14 @@ class Webhook(BaseWebhook):
                     raise InvalidArgument(
                         "Files being sent should be discord.File objects, not classes. Have you forgotten parentheses?"
                     )
+
+        # Error if AllowedMentions is a class
+        if allowed_mentions is not MISSING and isinstance(allowed_mentions, type):
+            raise InvalidArgument(
+                "The argument you passed into allowed_mentions must be an object, not a class. Have you forgotten parentheses?"
+            )
+
+
 
         if self.token is None:
             raise InvalidArgument(
