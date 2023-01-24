@@ -1688,11 +1688,41 @@ class Webhook(BaseWebhook):
             giving it a view, or you specified both ``thread_name`` and ``thread``.
         """
 
-        # If the view is a class and not an object, raise an error.
+        # OBJECT CHECKING #
+
+        # Error if any of the embeds are classes
+        if embed is not MISSING and isinstance(embed, type):
+            raise InvalidArgument(
+                "Embeds being sent must be discord.Embed objects, not classes. Have you forgotten parentheses?"
+            )
+        
+        if embeds is not MISSING:
+            for embed in embeds:
+                if isinstance(embed, type):
+                    raise InvalidArgument(
+                        "Embeds being sent must be discord.Embed objects, not classes. Have you forgotten parentheses?"
+                    )
+
+
+        # Error if any of the views are classes
         if view is not MISSING and isinstance(view, type):
             raise InvalidArgument(
                 f"The view you passed, {view.__name__}, should be an object, not a class. Have you forgotten parentheses?"
             )
+        
+        
+        # Error if any of the files are classes
+        if file is not MISSING and isinstance(file, type):
+            raise InvalidArgument(
+                "Files being sent should be discord.File objects, not classes. Have you forgotten parentheses?"
+            )
+        
+        if files is not MISSING:
+            for file in files:
+                if isinstance(file, type):
+                    raise InvalidArgument(
+                        "Files being sent should be discord.File objects, not classes. Have you forgotten parentheses?"
+                    )
 
         if self.token is None:
             raise InvalidArgument(
