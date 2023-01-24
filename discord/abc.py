@@ -1583,6 +1583,11 @@ class Messageable:
                 "The argument you passed into allowed_mentions must be an object, not a class. Have you forgotten parentheses?"
             )
 
+        # Error if argument for reference kwarg is a class
+        if reference and reference != Message and isinstance(reference, type):
+            raise InvalidArgument(
+                "The argument you passed into reference must be an object, not a class. Have you forgotten parentheses?"
+            )
 
 
         if view:
