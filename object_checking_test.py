@@ -8,6 +8,8 @@ from discord import File, Embed, AllowedMentions, MessageReference, PartialMessa
 from discord.ui import View, Button
 from discord.ext import commands
 
+TOKEN = 'Insert a token to play'
+
 bot = commands.Bot(command_prefix='!')
 
 @bot.command()
@@ -405,3 +407,6 @@ async def test_improper_partial_message(ctx):
 @bot.slash_command()
 async def test_proper_partial_message(ctx):
     await ctx.respond(content='PartialMessage', reference=PartialMessage(channel=ctx.channel, id='what the hellllll oh my goddd'))
+
+    
+bot.run(TOKEN)
