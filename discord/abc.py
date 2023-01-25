@@ -1500,8 +1500,8 @@ class Messageable:
             )
         
         if embeds:
-            for embed in embeds:
-                if isinstance(embed, type):
+            for embed_to_send in embeds:
+                if isinstance(embed_to_send, type):
                     raise InvalidArgument(
                         "Embeds being sent must be discord.Embed objects, not classes. Have you forgotten parentheses?"
                     )
