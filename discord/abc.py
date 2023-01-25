@@ -1534,7 +1534,7 @@ class Messageable:
             )
 
         # Error if argument for reference kwarg is a class
-        if reference and reference != Message and isinstance(reference, type):
+        if TYPE_CHECKING and reference and reference != Message and isinstance(reference, type):
             raise InvalidArgument(
                 "The argument you passed into reference must be an object, not a class. Have you forgotten parentheses?"
             )
