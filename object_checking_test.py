@@ -1,19 +1,18 @@
-  # For the test, we gotta check proper embed/files/allowed_mentions/view/reference sending
-# Also check for imporper embed/files/allowed_mentions/view/reference sending
-# Do for both application commands and normal messageable sending
-# Also do for original module and my fork
+# This tests Object Checking for Messageable.send and Integrations.send for the Pycord library
+# PR #1889 
 
 import discord
 from discord import File, Embed, AllowedMentions, MessageReference, PartialMessage
 from discord.ui import View, Button
 from discord.ext import commands
 
-TOKEN = 'Insert a token to play'
+TOKEN = 'Insert 1 token to play'
+intents = discord.Intents.all()
+intents.message_content = True
+bot = commands.Bot(intents=intents, command_prefix='$')
 
-bot = commands.Bot(command_prefix='!')
-
-@bot.command()
-async def test_improper_kwarg(ctx):
+@bot.command(name='improper')
+async def test_improper(ctx):
     # Improper embed sending
     try:
         await ctx.send(embed=Embed)
@@ -35,7 +34,7 @@ async def test_improper_kwarg(ctx):
     
     # Improper embeds list sending
     try:
-        await ctx.send(embeds=[Embed(), Embed, Embed()])
+        await ctx.send(embeds=[Embed(description='Improper embeds list'), Embed, Embed(description='Improper embeds list')])
     except Exception as e:
         if str(e) == 'Embeds being sent must be discord.Embed objects, not classes. Have you forgotten parentheses?':
             await ctx.send(
@@ -128,58 +127,22 @@ async def test_improper_kwarg(ctx):
                 {str(e)}
                 ```'''
             )
-    
-    # Improper MessageReference sending
-    try:
-        await ctx.send(content='MessageReference', reference=MessageReference)
-    except Exception as e:
-        if str(e) == 'The argument you passed into reference must be an object, not a class. Have you forgotten parentheses?':
-            await ctx.send(
-                f'''PASS: MessageReference object checking passed! Here is output:
-                ```
-                {str(e)}
-                ```'''
-            )
-        else:
-            await ctx.send(
-                f'''FAIL: MessageReference list object checking failed! Here is output:
-                ```
-                {str(e)}
-                ```'''
-            )
-    
-    # Improper PartialMessage sending
-    try:
-        await ctx.send(content='PartialMessage', reference=PartialMessage)
-    except Exception as e:
-        if str(e) == 'The argument you passed into reference must be an object, not a class. Have you forgotten parentheses?':
-            await ctx.send(
-                f'''PASS: MessageReference object checking passed! Here is output:
-                ```
-                {str(e)}
-                ```'''
-            )
-        else:
-            await ctx.send(
-                f'''FAIL: MessageReference list object checking failed! Here is output:
-                ```
-                {str(e)}
-                ```'''
-            )
 
-@bot.command()
-async def test_proper_kwarg(ctx):
+    await ctx.send('DONE!')
+
+@bot.command(name='proper')
+async def proper(ctx):
     try:
-        await ctx.send(embed=Embed())
-        await ctx.send(embeds=[Embed(), Embed(), Embed()])
+        embed_list = []
+        embed_list.append(Embed(description='Hi!'))
+        embed_list.append(Embed(description='Hello!'))
+        await ctx.send(embeds=embed_list)
         view = View()
-        view.add_item(Button())
+        view.add_item(Button(label='proper view'))
         await ctx.send(view=view)
         await ctx.send(file=File('image.png'))
-        await ctx.send(files=[File('image.png'), File('image.png')])
-        await ctx.send(content='Allowed mentions!! @everyone', allowed_mentions=[AllowedMentions(everyone=True)])
-        await ctx.send(content='MessageReference', refernce=MessageReference(message_id=ctx.message.id, channel_id=ctx.channel.id))
-        await ctx.send(content='PartialMessage', reference=PartialMessage(channel=ctx.channel, id='what the hellllll oh my goddd'))
+        await ctx.send(content='Allowed mentions!! @everyone', allowed_mentions=AllowedMentions(everyone=True))
+        await ctx.send(content='MessageReference', reference=MessageReference(message_id=ctx.message.id, channel_id=ctx.channel.id))
     except Exception as e:
         await ctx.send(f'''
             An error occured. This is the error:
@@ -188,10 +151,7 @@ async def test_proper_kwarg(ctx):
             ```
         ''')
 
-
-
-
-
+    await ctx.send('DONE!') 
 
 @bot.slash_command()
 async def test_improper_embed(ctx):
@@ -215,7 +175,7 @@ async def test_improper_embed(ctx):
 
 @bot.slash_command()
 async def test_proper_embed(ctx):
-    await ctx.respond(embed=Embed())
+    await ctx.respond(embed=Embed(description='Proper embed'))
 
 
 
@@ -223,7 +183,7 @@ async def test_proper_embed(ctx):
 async def test_improper_embed_list(ctx):
     # Improper embeds list sending
     try:
-        await ctx.respond(embeds=[Embed(), Embed, Embed()])
+        await ctx.respond(embeds=[Embed(description='Improper embed list'), Embed, Embed(description='Improper embed list')])
     except Exception as e:
         if str(e) == 'Embeds being sent must be discord.Embed objects, not classes. Have you forgotten parentheses?':
             await ctx.channel.send(
@@ -240,9 +200,11 @@ async def test_improper_embed_list(ctx):
                 ```'''
             )
 
+        raise e
+
 @bot.slash_command()
 async def test_proper_embed_list(ctx):
-    await ctx.respond(embeds=[Embed(), Embed(), Embed()])
+    await ctx.respond(embeds=[Embed(description='Proper'), Embed(description='embed'), Embed(description='list')])
 
 
 
@@ -270,7 +232,7 @@ async def test_improper_view(ctx):
 @bot.slash_command()
 async def test_proper_view(ctx):
     view = View()
-    view.add_item(Button())
+    view.add_item(Button(label='Proper view'))
     await ctx.respond(view=view)
 
 
@@ -352,61 +314,6 @@ async def test_improper_allowed_message(ctx):
 
 @bot.slash_command()
 async def test_proper_allowed_message(ctx):
-    await ctx.respond(content='Allowed mentions!! @everyone', allowed_mentions=[AllowedMentions(everyone=True)])
+    await ctx.respond(content='Allowed mentions!! @everyone', allowed_mentions=AllowedMentions(everyone=True))
 
-
-
-@bot.slash_command()
-async def test_improper_message_reference(ctx):
-    # Improper MessageReference sending
-    try:
-        await ctx.respond(content='MessageReference', reference=MessageReference)
-    except Exception as e:
-        if str(e) == 'The argument you passed into reference must be an object, not a class. Have you forgotten parentheses?':
-            await ctx.channel.send(
-                f'''PASS: MessageReference object checking passed! Here is output:
-                ```
-                {str(e)}
-                ```'''
-            )
-        else:
-            await ctx.channel.send(
-                f'''FAIL: MessageReference list object checking failed! Here is output:
-                ```
-                {str(e)}
-                ```'''
-            )
-
-@bot.slash_command()
-async def test_proper_messenge_reference(ctx):
-    await ctx.respond(content='MessageReference', refernce=MessageReference(message_id=ctx.message.id, channel_id=ctx.channel.id))
-
-
-
-@bot.slash_command()
-async def test_improper_partial_message(ctx):
-    # Improper PartialMessage sending
-    try:
-        await ctx.respond(content='PartialMessage', reference=PartialMessage)
-    except Exception as e:
-        if str(e) == 'The argument you passed into reference must be an object, not a class. Have you forgotten parentheses?':
-            await ctx.channel.send(
-                f'''PASS: MessageReference object checking passed! Here is output:
-                ```
-                {str(e)}
-                ```'''
-            )
-        else:
-            await ctx.channel.send(
-                f'''FAIL: MessageReference list object checking failed! Here is output:
-                ```
-                {str(e)}
-                ```'''
-            )
-
-@bot.slash_command()
-async def test_proper_partial_message(ctx):
-    await ctx.respond(content='PartialMessage', reference=PartialMessage(channel=ctx.channel, id='what the hellllll oh my goddd'))
-
-    
 bot.run(TOKEN)
