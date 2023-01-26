@@ -1521,8 +1521,8 @@ class Messageable:
             )
         
         if files:
-            for file in files:
-                if isinstance(file, type):
+            for file_to_send in files:
+                if isinstance(file_to_send, type):
                     raise InvalidArgument(
                         "Files being sent should be discord.File objects, not classes. Have you forgotten parentheses?"
                     )
