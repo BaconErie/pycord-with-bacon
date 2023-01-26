@@ -1,4 +1,4 @@
-# This tests Object Checking for Messageable.send and Integrations.send for the Pycord library
+# This tests Object Checking for Messageable.send and Interactions.send for the Pycord library
 # PR #1889 
 
 import discord
